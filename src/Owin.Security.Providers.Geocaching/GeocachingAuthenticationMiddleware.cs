@@ -1,4 +1,5 @@
 ﻿using System;
+using Owin;
 using System.Globalization;
 using System.Net.Http;
 using Microsoft.Owin;
@@ -67,7 +68,7 @@ namespace Owin.Security.Providers.Geocaching
 
         private static HttpMessageHandler ResolveHttpMessageHandler(GeocachingAuthenticationOptions options)
         {
-            var handler = options.BackchannelHttpHandler ?? new System.Net.Http.WebRequestHandler();
+            var handler = options.BackchannelHttpHandler ?? new WebRequestHandler();
 
             // If they provided a validator, apply it or fail.
             if (options.BackchannelCertificateValidator == null) return handler;

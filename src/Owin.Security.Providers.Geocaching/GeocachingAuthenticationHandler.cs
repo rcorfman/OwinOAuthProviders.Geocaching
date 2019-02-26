@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.Owin.Infrastructure;
 using Microsoft.Owin.Logging;
@@ -11,6 +12,7 @@ using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Infrastructure;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using IdentityModel;
 using static Owin.Security.Providers.Geocaching.GeocachingAuthenticationConstants;
 
 namespace Owin.Security.Providers.Geocaching
@@ -18,6 +20,7 @@ namespace Owin.Security.Providers.Geocaching
     public class GeocachingAuthenticationHandler : AuthenticationHandler<GeocachingAuthenticationOptions>
     {
         private const string XmlSchemaString = "http://www.w3.org/2001/XMLSchema#string";
+        private const string PkceCodeVerifierKey = "PkceCodeVerifier";
 
         private readonly ILogger _logger;
         private readonly HttpClient _httpClient;
@@ -74,6 +77,19 @@ namespace Owin.Security.Providers.Geocaching
                     new KeyValuePair<string, string>("client_secret", Options.ClientSecret)
                 };
 
+                if (Options.RequirePkce)
+                {
+                    if (properties.Dictionary.ContainsKey(PkceCodeVerifierKey))
+                    {
+                        string codeVerifier = properties.Dictionary[PkceCodeVerifierKey];
+                        body.Add(new KeyValuePair<string, string>("code_verifier", codeVerifier));
+                    }
+                    else
+                    {
+                        return new AuthenticationTicket(null, properties);
+                    }
+                }
+
                 // Request the token
                 var tokenResponse = await _httpClient.PostAsync(Options.TokenEndPoint, new FormUrlEncodedContent(body));
                 tokenResponse.EnsureSuccessStatusCode();
@@ -91,12 +107,13 @@ namespace Owin.Security.Providers.Geocaching
 
                 var userRequest = new HttpRequestMessage(HttpMethod.Get, userInfoEndpoint);
                 userRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
                 var graphResponse = await _httpClient.SendAsync(userRequest, Request.CallCancelled);
                 graphResponse.EnsureSuccessStatusCode();
                 text = await graphResponse.Content.ReadAsStringAsync();
                 var user = JObject.Parse(text);
 
-                var context = new GeocachingAuthenticatedContext(Context, user, accessToken, expires, refreshToken)
+                var context = new GeocachingAuthenticatedContext(Context, user, accessToken, refreshToken, expires)
                 {
                     Identity = new ClaimsIdentity(
                         Options.AuthenticationType,
@@ -211,6 +228,16 @@ namespace Owin.Security.Providers.Geocaching
                 "&redirect_uri=" + Uri.EscapeDataString(redirectUri) +
                 "&state=" + Uri.EscapeDataString(state);
 
+            if (Options.RequirePkce)
+            {
+                string codeVerifier = CryptoRandom.CreateUniqueId(32);
+                string codeChallenge = codeVerifier.ToSha256();
+
+                properties.Dictionary.Add(PkceCodeVerifierKey, codeVerifier);
+
+                authorizationEndpoint += "&code_challenge=" + codeChallenge + "&code_challenge_method=S256";
+            }
+
             var redirectContext = new GeocachingApplyRedirectContext(
                 Context, Options,
                 properties, authorizationEndpoint);
@@ -227,9 +254,7 @@ namespace Owin.Security.Providers.Geocaching
 
         private async Task<bool> InvokeReplyPathAsync()
         {
-            Microsoft.Owin.PathString requestPath = new Microsoft.Owin.PathString(Request.Path + ".aspx");
-
-            if (!Options.CallbackPath.HasValue || (Options.CallbackPath != Request.Path && Options.CallbackPath != requestPath))
+            if (!Options.CallbackPath.HasValue || Options.CallbackPath != Request.Path)
             {
                 return false;
             }
@@ -282,7 +307,8 @@ namespace Owin.Security.Providers.Geocaching
         /// <returns>Host name.</returns>
         private string GetHostName()
         {
-            return string.IsNullOrWhiteSpace(Options.ProxyHost) ? Request.Host.ToString() : Options.ProxyHost;
+            string hostName = string.IsNullOrWhiteSpace(Options.ProxyHost) ? Request.Host.ToString() : Options.ProxyHost;
+            return hostName;
         }
     }
 }

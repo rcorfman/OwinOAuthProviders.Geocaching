@@ -24,7 +24,7 @@ namespace Owin.Security.Providers.Geocaching
         /// <param name="user">The JSON-serialized user</param>
         /// <param name="accessToken">Geocaching Access token</param>
         /// <param name="expires">Seconds until expiration</param>
-        public GeocachingAuthenticatedContext(IOwinContext context, JObject user, string accessToken, string expires, string refreshToken)
+        public GeocachingAuthenticatedContext(IOwinContext context, JObject user, string accessToken, string refreshToken, string expires)
             : base(context)
         {
             User = user;

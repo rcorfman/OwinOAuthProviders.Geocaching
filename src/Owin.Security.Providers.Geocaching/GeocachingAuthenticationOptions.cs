@@ -78,6 +78,17 @@ namespace Owin.Security.Providers.Geocaching
         public string UserInfoEndPoint { get; set; }
 
         /// <summary>
+        /// Enables PKCE.
+        /// </summary>
+        /// <remarks>
+        /// Enables Proof Key for Code Exchange support.
+        /// See https://tools.ietf.org/html/rfc7636 for more details.
+        /// 
+        /// Defaults to true.
+        /// </remarks>
+        public bool RequirePkce { get; set; }
+
+        /// <summary>
         ///     Gets the list of profile fields to retrieve when signing in. 
         /// </summary>
         /// <remarks>
@@ -129,6 +140,7 @@ namespace Owin.Security.Providers.Geocaching
                 "geocacheLimits",
             };
             BackchannelTimeout = TimeSpan.FromSeconds(60);
+            RequirePkce = true;
         }
 
         public override string ToString()
@@ -142,6 +154,7 @@ namespace Owin.Security.Providers.Geocaching
                 .Append(Environment.NewLine).Append("\tTokenEndpoint: ").Append(TokenEndPoint)
                 .Append(Environment.NewLine).Append("\tUserInfoEndpoint: ").Append(UserInfoEndPoint)
                 .Append(Environment.NewLine).Append("\tCallbackPath: ").Append(CallbackPath)
+                .Append(Environment.NewLine).Append("\tRequirePkce: ").Append(RequirePkce)
                 .Append(Environment.NewLine).Append("\tProfileFields: ").Append(string.Join(",", ProfileFields));
             return sb.ToString();
         }
