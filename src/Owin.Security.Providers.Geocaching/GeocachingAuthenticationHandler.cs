@@ -215,6 +215,17 @@ namespace Owin.Security.Providers.Geocaching
                 properties.RedirectUri = currentUri;
             }
 
+            string codeVerifier = string.Empty;
+            string codeChallenge = string.Empty;
+
+            if (Options.RequirePkce)
+            {
+                codeVerifier = CryptoRandom.CreateUniqueId(32);
+                codeChallenge = codeVerifier.ToSha256();
+
+                properties.Dictionary.Add(PkceCodeVerifierKey, codeVerifier);
+            }
+
             // OAuth2 10.12 CSRF
             GenerateCorrelationId(properties);
 
@@ -230,11 +241,6 @@ namespace Owin.Security.Providers.Geocaching
 
             if (Options.RequirePkce)
             {
-                string codeVerifier = CryptoRandom.CreateUniqueId(32);
-                string codeChallenge = codeVerifier.ToSha256();
-
-                properties.Dictionary.Add(PkceCodeVerifierKey, codeVerifier);
-
                 authorizationEndpoint += "&code_challenge=" + codeChallenge + "&code_challenge_method=S256";
             }
 
