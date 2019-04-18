@@ -91,7 +91,7 @@ namespace Owin.Security.Providers.Geocaching
                 }
 
                 // Request the token
-                var tokenResponse = await _httpClient.PostAsync(Options.TokenEndPoint, new FormUrlEncodedContent(body));
+                var tokenResponse = await _httpClient.PostAsync(Options.Endpoints.TokenEndpoint, new FormUrlEncodedContent(body));
                 tokenResponse.EnsureSuccessStatusCode();
                 var text = await tokenResponse.Content.ReadAsStringAsync();
 
@@ -103,7 +103,7 @@ namespace Owin.Security.Providers.Geocaching
                 string refreshToken = (string)response.refresh_token;
 
                 // Get the Geocaching user
-                var userInfoEndpoint = Options.UserInfoEndPoint + "/me?fields=" + string.Join("%2C", Options.ProfileFields.Distinct().ToArray());
+                var userInfoEndpoint = Options.Endpoints.UserInfoEndpoint + "/me?fields=" + string.Join("%2C", Options.ProfileFields.Distinct().ToArray());
 
                 var userRequest = new HttpRequestMessage(HttpMethod.Get, userInfoEndpoint);
                 userRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
@@ -232,7 +232,7 @@ namespace Owin.Security.Providers.Geocaching
             string state = Options.StateDataFormat.Protect(properties);
 
             string authorizationEndpoint =
-                Options.AuthorizationEndPoint +
+                Options.Endpoints.AuthorizationEndpoint +
                 "?response_type=code" +
                 "&scope=*" +
                 "&client_id=" + Uri.EscapeDataString(Options.ClientId) +

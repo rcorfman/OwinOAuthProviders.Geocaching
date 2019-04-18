@@ -10,22 +10,20 @@ namespace Owin.Security.Providers.Geocaching
     {
         public static class Claims
         {
-            private const string Urn = "urn:geocaching:";
-
             //public const string Username = ClaimTypes.Name;
             //public const string ReferenceCode = ClaimTypes.NameIdentifier;
-            public const string RefreshToken = Urn + "refreshtoken";
-            public const string AccessToken = Urn + "accesstoken";
-            public const string MembershipLevelId = Urn + "membershiplevelid";
-            public const string AvatarUrl = Urn + "avatarurl";
-            public const string HomeCoordinates = Urn + "homecoordinates";
-            public const string FindCount = Urn + "findcount";
-            public const string HideCount = Urn + "hidecount";
-            public const string FavoritePoints = Urn + "favoritepoints";
-            public const string GeocacheLimits = Urn + "geocachelimits";
-            public const string ProfileText = Urn + "profiletext";
-            public const string BannerUrl = Urn + "bannerurl";
-            public const string Url = Urn + "url";
+            public const string RefreshToken = "urn:geocaching:refreshtoken";
+            public const string AccessToken = "urn:geocaching:accesstoken";
+            public const string MembershipLevelId = "urn:geocaching:membershiplevelid";
+            public const string AvatarUrl = "urn:geocaching:avatarurl";
+            public const string HomeCoordinates = "urn:geocaching:homecoordinates";
+            public const string FindCount = "urn:geocaching:findcount";
+            public const string HideCount = "urn:geocaching:hidecount";
+            public const string FavoritePoints = "urn:geocaching:favoritepoints";
+            public const string GeocacheLimits = "urn:geocaching:geocachelimits";
+            public const string ProfileText = "urn:geocaching:profiletext";
+            public const string BannerUrl = "urn:geocaching:bannerurl";
+            public const string Url = "urn:geocaching:url";
 
         }
     }

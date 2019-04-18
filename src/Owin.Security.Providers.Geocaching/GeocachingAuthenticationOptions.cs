@@ -9,6 +9,29 @@ namespace Owin.Security.Providers.Geocaching
 {
     public class GeocachingAuthenticationOptions : AuthenticationOptions
     {
+        public class GeocachingAuthenticationEndpoints
+        {
+            /// <summary>
+            /// Endpoint which is used to redirect users to Geocaching access
+            /// </summary>
+            public string AuthorizationEndpoint { get; set; }
+
+            /// <summary>
+            /// Endpoint which is used to exchange code for access token
+            /// </summary>
+            public string TokenEndpoint { get; set; }
+
+            public string UserInfoEndpoint { get; set; }
+        }
+
+        const string AuthenticationEndpoint = "https://www.geocaching.com/oauth/authorize.aspx";
+        const string TokenEndPoint = "https://oauth.geocaching.com/token";
+        const string UserInfoEndpoint = "https://api.groundspeak.com/v1.0/users";
+
+        const string StagingAuthenticationEndpoint = "https://staging.geocaching.com/oauth/authorize.aspx";
+        const string StagingTokenEndPoint = "https://oauth-staging.geocaching.com/token";
+        const string StagingUserInfoEndpoint = "https://staging.api.groundspeak.com/v1.0/users";
+
         /// <summary>
         ///     Gets or sets the a pinned certificate validator to use to validate the endpoints used
         ///     in back channel communications belong to Geocaching.
@@ -73,9 +96,9 @@ namespace Owin.Security.Providers.Geocaching
         /// </summary>
         public string ClientSecret { get; set; }
 
-        public string AuthorizationEndPoint { get; set; }
-        public string TokenEndPoint { get; set; }
-        public string UserInfoEndPoint { get; set; }
+        public GeocachingAuthenticationEndpoints Endpoints { get; set; }
+
+        public bool UseStaging { get; set; }
 
         /// <summary>
         /// Enables PKCE.
@@ -121,9 +144,10 @@ namespace Owin.Security.Providers.Geocaching
         /// <summary>
         ///     Initializes a new <see cref="GeocachingAuthenticationOptions" />
         /// </summary>
-        public GeocachingAuthenticationOptions()
+        public GeocachingAuthenticationOptions(bool useStaging = false)
             : base(Constants.DefaultAuthenticationType)
         {
+            UseStaging = useStaging;
             Caption = Constants.DefaultAuthenticationType;
             CallbackPath = new PathString("/signin-" + Constants.DefaultAuthenticationType);
             AuthenticationMode = AuthenticationMode.Passive;
@@ -139,6 +163,12 @@ namespace Owin.Security.Providers.Geocaching
                 "homeCoordinates",
                 "geocacheLimits",
             };
+            Endpoints = new GeocachingAuthenticationEndpoints()
+            {
+                AuthorizationEndpoint = useStaging ? StagingAuthenticationEndpoint : AuthenticationEndpoint,
+                TokenEndpoint = useStaging ? StagingTokenEndPoint : TokenEndPoint,
+                UserInfoEndpoint = useStaging ? StagingUserInfoEndpoint : UserInfoEndpoint,
+            };
             BackchannelTimeout = TimeSpan.FromSeconds(60);
             RequirePkce = true;
         }
@@ -150,9 +180,9 @@ namespace Owin.Security.Providers.Geocaching
                 .Append(Environment.NewLine).Append("\tCaption: ").Append(Caption)
                 .Append(Environment.NewLine).Append("\tClientId: ").Append(ClientId)
                 .Append(Environment.NewLine).Append("\tClientSecret: ").Append(ClientSecret)
-                .Append(Environment.NewLine).Append("\tAuthorizationEndpoint: ").Append(AuthorizationEndPoint)
-                .Append(Environment.NewLine).Append("\tTokenEndpoint: ").Append(TokenEndPoint)
-                .Append(Environment.NewLine).Append("\tUserInfoEndpoint: ").Append(UserInfoEndPoint)
+                .Append(Environment.NewLine).Append("\tEndPoints.AuthorizationEndpoint: ").Append(Endpoints.AuthorizationEndpoint)
+                .Append(Environment.NewLine).Append("\tEndPoints.TokenEndpoint: ").Append(Endpoints.TokenEndpoint)
+                .Append(Environment.NewLine).Append("\tEndPoints.UserInfoEndpoint: ").Append(Endpoints.UserInfoEndpoint)
                 .Append(Environment.NewLine).Append("\tCallbackPath: ").Append(CallbackPath)
                 .Append(Environment.NewLine).Append("\tRequirePkce: ").Append(RequirePkce)
                 .Append(Environment.NewLine).Append("\tProfileFields: ").Append(string.Join(",", ProfileFields));
