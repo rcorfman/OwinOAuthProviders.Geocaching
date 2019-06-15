@@ -221,7 +221,7 @@ namespace Owin.Security.Providers.Geocaching
             if (Options.RequirePkce)
             {
                 codeVerifier = CryptoRandom.CreateUniqueId(32);
-                codeChallenge = codeVerifier.ToSha256();
+                codeChallenge = codeVerifier.ToSha256().TrimEnd('=').Replace('+', '-').Replace('/', '_');
 
                 properties.Dictionary.Add(PkceCodeVerifierKey, codeVerifier);
             }
