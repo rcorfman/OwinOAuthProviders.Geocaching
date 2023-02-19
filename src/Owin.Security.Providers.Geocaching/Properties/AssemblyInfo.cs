@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Owin.Security.Providers.Geocaching")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Owin Security Provider for Geocaching API")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("LonelyCache LC")]
 [assembly: AssemblyProduct("Owin.Security.Providers.Geocaching")]
-[assembly: AssemblyCopyright("Copyright ©  2019")]
+[assembly: AssemblyCopyright("Copyright © 2023")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
