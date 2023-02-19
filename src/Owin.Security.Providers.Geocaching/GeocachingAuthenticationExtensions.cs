@@ -1,6 +1,4 @@
-
 using System;
-using Owin;
 
 namespace Owin.Security.Providers.Geocaching
 {

@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace Owin.Security.Providers.Geocaching
 {
     public static class GeocachingAuthenticationConstants
     {
         public static class Claims
         {
-            //public const string Username = ClaimTypes.Name;
-            //public const string ReferenceCode = ClaimTypes.NameIdentifier;
             public const string RefreshToken = "urn:geocaching:refreshtoken";
             public const string AccessToken = "urn:geocaching:accesstoken";
             public const string MembershipLevelId = "urn:geocaching:membershiplevelid";
