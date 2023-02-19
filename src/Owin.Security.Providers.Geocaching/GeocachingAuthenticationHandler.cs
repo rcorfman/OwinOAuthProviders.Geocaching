@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.Owin.Infrastructure;
 using Microsoft.Owin.Logging;
@@ -215,12 +214,11 @@ namespace Owin.Security.Providers.Geocaching
                 properties.RedirectUri = currentUri;
             }
 
-            string codeVerifier = string.Empty;
             string codeChallenge = string.Empty;
 
             if (Options.RequirePkce)
             {
-                codeVerifier = CryptoRandom.CreateUniqueId(32);
+                string codeVerifier = CryptoRandom.CreateUniqueId(32);
                 codeChallenge = codeVerifier.ToSha256().TrimEnd('=').Replace('+', '-').Replace('/', '_');
 
                 properties.Dictionary.Add(PkceCodeVerifierKey, codeVerifier);

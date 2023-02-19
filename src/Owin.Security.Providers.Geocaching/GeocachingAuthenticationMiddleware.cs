@@ -1,5 +1,4 @@
 ﻿using System;
-using Owin;
 using System.Globalization;
 using System.Net.Http;
 using Microsoft.Owin;
@@ -72,9 +71,9 @@ namespace Owin.Security.Providers.Geocaching
 
             // If they provided a validator, apply it or fail.
             if (options.BackchannelCertificateValidator == null) return handler;
+
             // Set the cert validate callback
-            var webRequestHandler = handler as WebRequestHandler;
-            if (webRequestHandler == null)
+            if (!(handler is WebRequestHandler webRequestHandler))
             {
                 throw new InvalidOperationException(Resources.Exception_ValidatorHandlerMismatch);
             }
